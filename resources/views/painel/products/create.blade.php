@@ -30,7 +30,7 @@
 
   <div class="form-group">
     <select name="category" class="form-control">
-      <option value="">Escolha a Categoria</option>
+      <option value="{{old('category')}}">Escolha a Categoria</option>
       @foreach($categorys as $category)
       <option value="{{$category}}">{{$category}}</option>
       @endforeach
