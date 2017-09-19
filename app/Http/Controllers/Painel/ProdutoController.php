@@ -10,7 +10,7 @@ class ProdutoController extends Controller
 {
     private $product;
 
-    public function __contruct(Product $product)
+    public function _contruct(Product $product)
     {
       $this->product = $product;
     }
@@ -36,7 +36,7 @@ class ProdutoController extends Controller
     {
         $title = "Cadastrar novo produto";
         $categorys=['eletronicos', 'moveis', 'limpeza', 'banho'];
-        return view('painel.products.create', compact('title', 'categorys'));
+        return view('painel.products.create-edit', compact('title', 'categorys'));
     }
 
     /**
@@ -95,9 +95,13 @@ class ProdutoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit($id, Product $product)
     {
-        //
+        // recupera o produto pelo id
+        $product = $product->find($id);
+        $title = "Editar Produto: {$product->name}";
+        $categorys = ['eletronicos', 'moveis', 'limpeza', 'banho'];
+        return view('painel.products.create-edit', compact('product', 'title', 'categorys'));
     }
 
     /**
@@ -107,9 +111,25 @@ class ProdutoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(ProductFormRequest $request, $id, Product $product)
     {
-        //
+        //recupera todos os dados do formulario
+        $dataForm= $request->all();
+
+        //recupera o item para editar
+        $product = $product->find($id);
+
+        //verifica se o produto esta ativado
+        $dataForm['active'] = ( !isset($dataForm['active']) ) ? 0 : 1;
+
+        //altera os itens
+        $update = $product->update($dataForm);
+
+        //verifica se realmente editou
+        if($update)
+          return redirect()->route('produtos.index');
+        else
+          return redirect()->route('produtos.edit', $id)->with(['errors' => 'Falha ao editar']);
     }
 
     /**
