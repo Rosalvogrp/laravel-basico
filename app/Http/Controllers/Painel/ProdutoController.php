@@ -84,9 +84,11 @@ class ProdutoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show($id, Product $product)
     {
-        //
+        $product = $product->find($id);
+        $title = "Product: {$product->name}";
+        return view('painel.products.show', compact('product', 'title'));
     }
 
     /**
@@ -138,9 +140,14 @@ class ProdutoController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($id, Product $product)
     {
-        //
+      $prod = $product->find($id);
+      $delete = $prod->delete();
+      if($delete)
+        return redirect()->route('produtos.index');
+      else
+        return redirect()->route('produtos.show', $id)->with(['errors' => 'Falha ao deletar']);
     }
 
     public function tests(Product $product)
